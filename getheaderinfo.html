@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    test
+    <script type="text/javascript">
+        function XMLHttpRequestCreate(){
+            try{
+                return new XMLHttpRequest();
+            }catch(e){}
+            try{
+                return new ActiveXObject('MSXML2.XMLHTTP.6.0');
+            }catch(e){}
+            try{
+                return new ActiveXObject('MSXML2.XMLHTTP.3.0');
+            }catch(e){}
+            try{
+                return new ActiveXObject('MSXML2.XMLHTTP');
+            }catch(e){}
+
+            return null;
+        }
+
+        // ------------------------------------------------------------
+        // XMLHttpRequest オブジェクトを作成
+        // ------------------------------------------------------------
+        var xhr = XMLHttpRequestCreate();
+
+        // ------------------------------------------------------------
+        // XHR 通信の状態が変化するたびに実行されるイベント
+        // ------------------------------------------------------------
+        xhr.onreadystatechange = function (){
+
+            // ------------------------------------------------------------
+            // レスポンスヘッダの受信が完了した
+            // ------------------------------------------------------------
+            if(xhr.readyState == 2){
+
+                // ------------------------------------------------------------
+                // レスポンスヘッダの情報を１つずつ取得
+                // ------------------------------------------------------------
+                var rate_limit_limit   = xhr.getResponseHeader("X-RateLimit-Limit");
+
+                // APIの１分あたりの残り回数を表示
+                var rate_limit_remaining = xhr.getResponseHeader("X-RateLimit-Remaining");
+
+                //　全てのヘッダー情報
+                var all_response = xhr.getAllResponseHeaders();
+                // ------------------------------------------------------------
+                // 出力テスト
+                // ------------------------------------------------------------
+                console.log("X-RateLimit-Limit: "   + rate_limit_limit);
+                console.log("X-RateLimit-Remaining: "   + rate_limit_remaining);
+
+                if(xhr.getResponseHeader("x-ratelimit-reset")) {
+                    alert("リクエスト回数を超過しています　時間をおいて更新してください" );
+                } else {
+                    alert("残り更新可能回数: " + rate_limit_remaining + " 回/分" );
+                }
+            }
+        };
+
+        // ------------------------------------------------------------
+        // 「GET メソッド」「接続先 URL」を指定
+        // ------------------------------------------------------------
+        xhr.open("GET" , "http://localhost:800/api/test");
+
+        // ------------------------------------------------------------
+        // XHR 通信を開始する
+        // ------------------------------------------------------------
+        xhr.send(null);
+    </script>
+</body>
+</html>
